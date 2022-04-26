@@ -1,0 +1,109 @@
+const getRefreshToken = require('../helpers/getValidRefreshToken')
+const ApiError = require('../errors/api-error')
+const { Group, Post } = require('../db')
+const PostService = require('../service/post-service')
+const getStaffIndex = require('../helpers/getStaffIndex')
+
+class PostController {
+    //complete
+    async create(req, res, next) {
+        try {
+            const refreshToken = getRefreshToken(req)
+            const {message, group} = req.body
+            const groupCandidat = await Group.findById(group)
+            if(group) {
+            const postData = PostService.createPostGroup(message, groupCandidat, refreshToken)
+            return res.json(postData)
+            }
+            const postData = PostService.createPostUser(message, refreshToken)
+            return res.json(postData)
+
+        } catch (error) {
+           next(error) 
+        }
+    }  
+    //complete
+    async update(req, res, next) {
+        try {
+           const refreshToken = getRefreshToken(req)
+           const {post, message, group} = req.body
+           const postCandidat = await Post.findById(post)
+           const groupData = await Group.findById(postCandidat.group)
+
+           if(!postCandidat) {
+                return next(ApiError.BadRequest('Такого поста не существует'))
+           }
+           if(group) {
+               if(!groupData) {
+                return next(ApiError.BadRequest('Такой группы не существует'))
+               }
+               if(groupData.admin != refreshToken.id || groupData.staff[staffIndex].userRole !== 'editor') {
+                return next(ApiError.BadRequest('Вы не являетесь персоналом данной группы'))
+               }
+               const postData = await Post.updateOne({id: post}, {message: message})
+               return res.json(postData)
+           }
+           if(postCandidat.author != refreshToken.id) {
+               return next(ApiError.BadRequest('Вы не автор данного поста'))
+           }
+           const postData = await Post.updateOne({id: post}, {message: message})
+           return res.json(postData)
+
+        } catch (error) {
+           next(error) 
+        }
+    }
+    //complete
+    async remove(req, res, next) {
+        try {
+            const refreshToken = getRefreshToken(req)
+            const {post, group} = req.body
+            const postCandidat = await Post.findById(post)
+            const groupCandidat = await Group.findById(group)
+ 
+            if(!postCandidat) {
+                 return next(ApiError.BadRequest('Такого поста не существует'))
+            }
+            if(group) {
+                const staffIndex = getStaffIndex(groupCandidat, refreshToken.id)
+                if(!groupCandidat) {
+                 return next(ApiError.BadRequest('Такой группы не существует'))
+                }
+                if(groupCandidat.admin != refreshToken.id || groupCandidat.staff[staffIndex].userRole != 'editor') {
+                 return next(ApiError.BadRequest('Вы не являетесь персоналом данной группы'))
+                }
+                if(postCandidat.group != group) {
+                    return next(ApiError.BadRequest('Такого поста не сущестует в данной группе'))
+                }
+                const postData = await Post.deleteOne({post})
+                return res.json(postData)
+            }
+            if(postCandidat.author != refreshToken.id) {
+                return next(ApiError.BadRequest('Вы не автор данного поста'))
+            }
+            const postData = await Post.deleteOne({post})
+            return res.json(postData)
+        } catch (error) {
+           next(error) 
+        }
+    }
+    //complete
+    async get(req, res, next) {
+        try {
+            const {post} = req.body
+
+            const postCandidat = await Post.findById(post)
+            if(!postCandidat) {
+             return next(ApiError.BadRequest('Такого поста не существует'))
+            }
+
+            return res.json(postCandidat)
+            
+        } catch (error) {
+           next(error) 
+        }
+    }
+}
+
+module.exports = new PostController()
+
