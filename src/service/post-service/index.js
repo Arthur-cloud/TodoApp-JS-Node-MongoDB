@@ -9,7 +9,7 @@ class PostService {
         const staffIndex = getStaffIndex(group, refreshToken.id)
 
         if(group.admin != refreshToken.id || group.staff[staffIndex].userRole !== 'editor') {
-            throw ApiError.BadRequest('Вы не являетесь персоналом данной группы')
+            throw ApiError.BadRequest('You are not part of this group')
         }
 
         const postData = await Post.create({message: message, group: group, author: refreshToken.id})

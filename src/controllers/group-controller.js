@@ -14,7 +14,7 @@ class GroupController {
             const candidatGroup = await Group.findOne({name: group})
 
             if(candidatGroup) {
-                return next(ApiError.BadRequest(`Такая group: ${candidatGroup.id} уже существует`))
+                return next(ApiError.BadRequest(`This group: ${candidatGroup.id} already exists`))
             }
 
             const groupData = await Group.create({name: group, admin: refreshToken.id})
@@ -32,10 +32,10 @@ class GroupController {
             const candidatGroup = await Group.findOne({group})
 
             if(!candidatGroup) {
-                return next(ApiError.BadRequest(`Такой группы не сущесвует`))
+                return next(ApiError.BadRequest(`No such group exists`))
             }
             if(candidatGroup.admin != refreshToken.id) {
-                return next(ApiError.BadRequest(`Вы не являетесь автором данной группы`))
+                return next(ApiError.BadRequest(`You are not the author of this group`))
             }
 
             const groupData = await Group.deleteOne({group})
@@ -52,10 +52,10 @@ class GroupController {
             const candidatGroup = await Group.findById(group)
 
             if(!candidatGroup) {
-                return next(ApiError.BadRequest(`Такой группы не сущесвует`))
+                return next(ApiError.BadRequest(`No such group exist`))
             }
             if(candidatGroup.admin != refreshToken.id) {
-                return next(ApiError.BadRequest(`Вы не являетесь персоналом данной группы`))
+                return next(ApiError.BadRequest(`You are not part of this group`))
             }
 
             const groupData = await Group.updateOne({name: edit})
@@ -76,26 +76,26 @@ class GroupController {
             const userIndex = getStaffIndex(candidatGroup.staff, user)
 
             if(!candidatGroup) {
-                return next(ApiError.BadRequest(`Такой группы не сущесвует`))
+                return next(ApiError.BadRequest(`No such group exists`))
             }
             if(candidatGroup.admin != refreshToken.id) {
-                return next(ApiError.BadRequest(`Вы не являетесь автором данной группы`))
+                return next(ApiError.BadRequest(`You are not the author of this group`))
             }
             if(!candidatUser) {
-                return next(ApiError.BadRequest(`Такого пользователя не существует`))
+                return next(ApiError.BadRequest(`This user does not exist`))
             }
 
             if(!userRole) {
                 GroupService.deleteRole(candidatGroup, userIndex)
-                return res.json("Пользователь успешно удалён из учасников персонала")
+                return res.json("The user was successfully removed from staff members")
             }
             if(candidatGroup.staff[userIndex] != -1) {
                 GroupService.editRole(candidatGroup, user, userRole, userIndex)
-                return res.json(`Вы изменили пользователю: ${user} должность, на - ${userRole}`)
+                return res.json(`You have changed user ${user} position to - ${userRole}`)
             }
             
             GroupService.addRole(candidatGroup, user, userRole)
-            return res.json(`Пользователь: ${user} получил новую должность - ${userRole}`)
+            return res.json(`User: ${user} got a new position - ${userRole}`)
 
         } catch (error) {
             next(error)
@@ -111,31 +111,31 @@ class GroupController {
             const userIndex = getStaffIndex(candidatGroup.restricted, user)
 
             if(!candidatUser) {
-                return next(ApiError.BadRequest(`Такого пользователя не существует`))
+                return next(ApiError.BadRequest(`This user does not exist`))
             }
             if(!candidatGroup) {
-                return next(ApiError.BadRequest(`Такой группы не сущесвует`))
+                return next(ApiError.BadRequest(`No such group exists`))
             }
             if(candidatGroup.admin != refreshToken.id) {
                 const staffIndex = getStaffIndex(candidatGroup, user)
                 if(candidatGroup.staff[staffIndex].userRole == undefined) {
-                    return next(ApiError.BadRequest(`Вы не являетесь персоналом данной группы`))
+                    return next(ApiError.BadRequest(`You are not part of this group`))
 
                 }
                 if(candidatGroup.staff[staffIndex].userRole != 'moderator') {
-                    return next(ApiError.BadRequest(`У вас нету прав для этой функции`))
+                    return next(ApiError.BadRequest(`You do not have permission for this feature`))
                 }
             }
 
             if(status == "ban") {
                  GroupService.ban(candidatGroup, user, userIndex)
-                return res.json("Статус был успешно обновлён")
+                return res.json("Status has been successfully updated")
             }
             if(status == "mute") {
                 GroupService.mute(candidatGroup, user, userIndex)
-                return res.json("Статус был успешно обновлён")
+                return res.json("Status has been successfully updated")
             }
-            res.json("Ошибка ввода")
+            res.json("Input Error")
         } catch (error) {
             next(error)
         }

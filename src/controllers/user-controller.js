@@ -16,19 +16,19 @@ class UserController {
                 const userIndex = getStaffIndex(groupData, refreshToken.id)
                 if(userIndex != -1) {
                     if(groupData.restricted[userIndex].status == 'ban') {
-                        return next(ApiError.BadRequest(`У вас ограниченый доступ с данной группой`)) 
+                        return next(ApiError.BadRequest(`You have restricted access with this group`)) 
                     }
                 }
             }
             if(!postData) {
-                return next(ApiError.BadRequest(`Такого поста не существует`))
+                return next(ApiError.BadRequest(`This post does not exist`))
             }
 
             if(postData.like.includes(refreshToken.id) == true) {
                 const index = postData.like.indexOf()
                 postData.like.splice(index, 1)
                 await postData.save()
-                return res.json("Лайк успешно удалён")
+                return res.json("Like successfully deleted")
             }
 
             if(postData.dislike.includes(refreshToken.id) == true) {
@@ -39,7 +39,7 @@ class UserController {
 
             postData.like.push(refreshToken.id)
             await postData.save()
-            return res.json("Вы успешно поставили лайк")
+            return res.json("You have successfully liked")
         } catch (error) {
             next(error)
         }
@@ -55,19 +55,19 @@ class UserController {
                 const userIndex = getStaffIndex(groupData, refreshToken.id)
                 if(userIndex != -1) {
                     if(groupData.restricted[userIndex].status == 'ban') {
-                        return next(ApiError.BadRequest(`У вас ограниченый доступ с данной группой`)) 
+                        return next(ApiError.BadRequest(`You have restricted access with this group`)) 
                     }
                 }
             }
             if(!postData) {
-                return next(ApiError.BadRequest(`Такого поста не существует`))
+                return next(ApiError.BadRequest(`This post does not exist`))
             }
 
             if(postData.dislike.includes(refreshToken.id) == true) {
                 const index = postData.dislike.indexOf()
                 postData.dislike.splice(index, 1)
                 await postData.save()
-                return res.json("Дизлайк успешно удалён")
+                return res.json("Dislike successfully removed")
             }
 
             if(postData.like.includes(refreshToken.id) == true) {
@@ -78,7 +78,7 @@ class UserController {
 
             postData.dislike.push(refreshToken.id)
             await postData.save()
-            return res.json("Вы успешно поставили дизлайк")
+            return res.json("You have successfully disliked")
         } catch (error) {
             next(error)
         }
@@ -93,7 +93,7 @@ class UserController {
                 const userIndex = getStaffIndex(groupData, refreshToken.id)
                 if(userIndex != -1) {
                     if(groupData.restricted[userIndex].status == 'ban') {
-                        return next(ApiError.BadRequest(`У вас ограниченый доступ с данной группой`)) 
+                        return next(ApiError.BadRequest(`You have restricted access with this group`)) 
                     }
                 }
             }
@@ -107,7 +107,7 @@ class UserController {
                 return res.json(subscriptionData)
             }
             
-            return next(ApiError.BadRequest(`Ну ты явно где-то проебался чел`))
+            return next(ApiError.BadRequest(`Input Error`))
                 
 
             
@@ -124,16 +124,16 @@ class UserController {
             if(groupData) {
                 const userIndex = getStaffIndex(groupData, refreshToken.id)
                 if(userIndex != -1) {
-                    return next(ApiError.BadRequest(`У вас ограниченый доступ с данной группой`))
+                    return next(ApiError.BadRequest(`You have restricted access with this group`))
                 }
             }
             
             if(!postData) {
-                return next(ApiError.BadRequest(`Такого поста не существует`))
+                return next(ApiError.BadRequest(`This post does not exist`))
             }
 
             if(!comment) {
-                return next(ApiError.BadRequest(`Коментарий не указан`))
+                return next(ApiError.BadRequest(`Comment not specified`))
             }
             const id = refreshToken.id
             postData.comment.push({id, comment})

@@ -31,20 +31,20 @@ class PostController {
            const groupData = await Group.findById(postCandidat.group)
 
            if(!postCandidat) {
-                return next(ApiError.BadRequest('Такого поста не существует'))
+                return next(ApiError.BadRequest('This post does not exist'))
            }
            if(group) {
                if(!groupData) {
-                return next(ApiError.BadRequest('Такой группы не существует'))
+                return next(ApiError.BadRequest('No such group exists'))
                }
                if(groupData.admin != refreshToken.id || groupData.staff[staffIndex].userRole !== 'editor') {
-                return next(ApiError.BadRequest('Вы не являетесь персоналом данной группы'))
+                return next(ApiError.BadRequest('You are not part of this group'))
                }
                const postData = await Post.updateOne({id: post}, {message: message})
                return res.json(postData)
            }
            if(postCandidat.author != refreshToken.id) {
-               return next(ApiError.BadRequest('Вы не автор данного поста'))
+               return next(ApiError.BadRequest('You are not the author of this post'))
            }
            const postData = await Post.updateOne({id: post}, {message: message})
            return res.json(postData)
@@ -62,24 +62,24 @@ class PostController {
             const groupCandidat = await Group.findById(group)
  
             if(!postCandidat) {
-                 return next(ApiError.BadRequest('Такого поста не существует'))
+                 return next(ApiError.BadRequest('This post does not exist'))
             }
             if(group) {
                 const staffIndex = getStaffIndex(groupCandidat, refreshToken.id)
                 if(!groupCandidat) {
-                 return next(ApiError.BadRequest('Такой группы не существует'))
+                 return next(ApiError.BadRequest('No such group exists'))
                 }
                 if(groupCandidat.admin != refreshToken.id || groupCandidat.staff[staffIndex].userRole != 'editor') {
-                 return next(ApiError.BadRequest('Вы не являетесь персоналом данной группы'))
+                 return next(ApiError.BadRequest('You are not part of this group'))
                 }
                 if(postCandidat.group != group) {
-                    return next(ApiError.BadRequest('Такого поста не сущестует в данной группе'))
+                    return next(ApiError.BadRequest('This post does not exist in this group'))
                 }
                 const postData = await Post.deleteOne({post})
                 return res.json(postData)
             }
             if(postCandidat.author != refreshToken.id) {
-                return next(ApiError.BadRequest('Вы не автор данного поста'))
+                return next(ApiError.BadRequest('You are not the author of this post'))
             }
             const postData = await Post.deleteOne({post})
             return res.json(postData)
@@ -94,7 +94,7 @@ class PostController {
 
             const postCandidat = await Post.findById(post)
             if(!postCandidat) {
-             return next(ApiError.BadRequest('Такого поста не существует'))
+             return next(ApiError.BadRequest('This post does not exist'))
             }
 
             return res.json(postCandidat)

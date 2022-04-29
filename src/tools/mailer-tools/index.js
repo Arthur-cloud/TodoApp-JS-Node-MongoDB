@@ -19,7 +19,7 @@ class MailService {
         await this.transporter.sendMail({
             from: config.SMTP_USER,
             to,
-            subject: 'Активация акаунта на ' + config.API_URL,
+            subject: 'Account activation for ' + config.API_URL,
             text: `${code}`
         })
     }

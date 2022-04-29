@@ -9,7 +9,7 @@ class GroupService {
     async addRole(group, user, userRole) {
         const index = config.role.indexOf(userRole)
         if(index < 0) {
-            throw ApiError.BadRequest(`Такого название для персонала не существует`)
+            throw ApiError.BadRequest(`This staff name does not exist`)
         }
         group.staff.push({user, userRole})
         group.save()
@@ -17,7 +17,7 @@ class GroupService {
 
     async deleteRole(group, userIndex) {
         if(userIndex = -1) {
-            throw ApiError.BadRequest(`Данный пользователь не являеться членом команды`)
+            throw ApiError.BadRequest(`This user is not a team member`)
         }
         group.staff.splice(userIndex, 1)
         await group.save()
@@ -26,7 +26,7 @@ class GroupService {
     async editRole(group, user, userRole, userIndex) {
         const index = config.role.indexOf(userRole)
         if(index < 0) {
-            throw ApiError.BadRequest(`Такого название для персонала не существует`)
+            throw ApiError.BadRequest(`This staff name does not exist`)
         }
 
         group.staff.splice(userIndex, 1)

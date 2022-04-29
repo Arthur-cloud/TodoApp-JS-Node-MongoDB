@@ -16,7 +16,7 @@ class UserService {
         const candidat = await User.findOne({email})
 
         if(candidat && candidat.isActivated === true) {
-            throw ApiError.BadRequest('Пользователь с таким email уже существует')
+            throw ApiError.BadRequest('User with this email already exists')
         }
 
         const hashPassword = await bcrypt.hash(password, 7);
@@ -45,7 +45,7 @@ class UserService {
     async activate(validAccess, code, adminCode) {
 
         if(validAccess.authCode != code) {
-            throw ApiError.BadRequest('Некоректно ведён код активации')
+            throw ApiError.BadRequest('Activation code entered incorrectly')
         }
 
         const email = validAccess.email
@@ -61,7 +61,7 @@ class UserService {
                 userData.save()
                 return userData
             } else {
-                throw ApiError.BadRequest('Некоректно ведён админ код')
+                throw ApiError.BadRequest('Admin code entered incorrectly')
             }
 
         } else {
@@ -76,12 +76,12 @@ class UserService {
     async login(email, password) {
         const user = await User.findOne({email})
         if(!user) {
-            throw ApiError.BadRequest('Пользователь не найден')
+            throw ApiError.BadRequest('User is not found')
         }
         
         const isPassEquals = await bcrypt.compare(password, user.password);
         if(!isPassEquals) {
-            throw ApiError.BadRequest('Неверный пароль')
+            throw ApiError.BadRequest('Incorrect password')
         }
 
         const userDto = new UserDto(user);
@@ -127,7 +127,7 @@ class UserService {
         const groupData = await Group.findById(group)
 
         if(!groupData) {
-            throw ApiError.BadRequest(`Такой группы не существует`)
+            throw ApiError.BadRequest(`No such group exists`)
         }
         // if(groupData.admin == refreshToken.id) {
         //     throw ApiError.BadRequest(`Вы автор данной группы`)
@@ -152,7 +152,7 @@ class UserService {
         const followerData = await User.findById(refreshToken.id)
 
         if(userData.id == followerData.id) {
-            throw  ApiError.BadRequest(`Вы не можете подписаться сами на себя`)
+            throw  ApiError.BadRequest(`You can't subscribe to yourself`)
         }
 
         if(followerData.userFollowing.includes(userData.id) == true) {
